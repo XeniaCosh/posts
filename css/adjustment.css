@@ -1,0 +1,14 @@
+#main > .container {
+  min-width: 400px;
+}
+
+#posts article { 
+  width: 100%;
+}
+  #posts article footer .tags button {
+      margin-right: 5px;
+  }
+
+#post-add{ 
+  width: 100%;
+}

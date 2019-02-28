@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>React Posts</title>
+
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/posts.css">
+  <link rel="stylesheet" href="css/adjustment.css">
+
+  <script type="text/javascript" src="js/posts.js"></script>
+
+  <script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.js"></script>
+
+</head>
+<body>
+  
+  <div id="main"></div>
+
+  <script type="text/babel">
+    // component App
+    class App extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = { posts: this.props.data, title: '', body: '', tags: [] };
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
+        this.handleRemove = this.handleRemove.bind(this);
+      }
+
+      render() {
+        return (
+          <div className="container">
+            <header id="header">
+              <div className="page-header">
+                <h1>Коллекция постов</h1>
+              </div>
+            </header>
+            <section>
+              <Posts app={this} />
+              <Form app={this} />
+            </section>
+          </div>
+        );
+      }
+
+      handleChange(e) {
+        switch (e.target.name) {
+          case 'title':
+            this.setState({ title: e.target.value });
+            break;
+          case 'body':
+            this.setState({ body: e.target.value });
+            break;
+          case 'tags':
+            this.setState({ tags: e.target.value.split(',') });
+            break;
+          default:
+            break;
+        }
+      }
+
+      handleSubmit(e) {
+        e.preventDefault();
+        let maxId = this.getPostsMaxId();
+        let clearTitle = this.state.title.trim();
+        let clearBody = this.state.body.trim();
+        let clearTags = this.state.tags.map(elem => elem.trim()).filter((elem,i,arr) => (elem && arr.indexOf(elem) === i));
+        if (!clearTitle.length || !clearBody.length || !clearTags.length) {
+          return;
+        }
+        const newPost = {
+          id: maxId,
+          title: clearTitle,
+          body: clearBody,
+          tags: clearTags
+        };
+        this.setState(state => ({
+          posts: state.posts.concat(newPost),
+          title: '',
+          body: '',
+          tags: []
+        }));
+      }
+
+      handleRemove(e) {
+        let clearId = parseInt(e.target.id.substr("button-post-".length));
+        this.setState(state => ({
+          posts: state.posts.filter(elem => (parseInt(elem.id) !== clearId)),
+          title: '',
+          body: '',
+          tags: []
+        }));
+      }
+
+      getPostsMaxId() {
+        let maxId = 1;
+        this.state.posts.forEach((elem) => {if(elem.id >= maxId) maxId = +elem.id + 1;});
+        return maxId;
+      }
+    }
+
+    // component Posts
+    class Posts extends React.Component {
+      render() {
+        return (
+          <div id="posts" className={this.props.app.state.posts.length ? "well" : "empty-posts-area"}>
+            {this.props.app.state.posts.map(post => (
+
+              <article key={post.id}>
+                <header>
+                  <h3>{post.title}</h3>
+                </header>
+                <section>
+                  <p>{post.body}</p>
+                </section>
+                <footer>
+                  <div className="tags">
+                    {post.tags.map(tag => (
+                      <button key={tag} className="btn btn-xs btn-default">{tag}</button>
+                    ))}
+                  </div>
+                </footer>
+                <div className="controls">
+                  <button
+                    id={"post-button-" + post.id}
+                    className="btn btn-danger btn-mini"
+                    onClick={this.props.app.handleRemove}>
+                      удалить
+                  </button>
+                </div>
+              </article>
+            
+            ))}
+          </div>
+        );
+      }
+    }
+
+    // component Form
+    class Form extends React.Component {
+      render() {
+        return (
+          <form id="post-add" className="col-lg-4" onSubmit={this.props.app.handleSubmit}>
+            <div className="form-group">
+              <input 
+                type="text"
+                className="form-control"
+                name="title"
+                placeholder="заголовок"
+                onChange={this.props.app.handleChange}
+                value={this.props.app.state.title}
+              />
+            </div>
+            <div className="form-group">
+              <input 
+                type="text"
+                className="form-control"
+                name="body"
+                placeholder="запись"
+                onChange={this.props.app.handleChange}
+                value={this.props.app.state.body}
+              />
+            </div>
+            <div className="form-group">
+              <input 
+                type="text"
+                className="form-control"
+                name="tags"
+                placeholder="тег, еще тег"
+                onChange={this.props.app.handleChange}
+                value={this.props.app.state.tags}
+              />
+            </div>
+            <button type="submit" className="btn btn-primary">Добавить</button>
+          </form>
+        );
+      }
+    }
+
+    // postsData is declared and initialized in js/posts.js
+    ReactDOM.render(
+      <App data={postsData} />,
+      document.getElementById('main')
+    );
+
+  </script>
+</body>
+</html>

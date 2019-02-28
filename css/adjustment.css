@@ -1,6 +1,9 @@
 #main > .container {
   min-width: 400px;
 }
+  #main > .container:after {
+    height: 15px;
+  }
 
 #posts article { 
   width: 100%;

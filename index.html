@@ -26,7 +26,10 @@
     class App extends React.Component {
       constructor(props) {
         super(props);
-        this.state = { posts: this.props.data, title: '', body: '', tags: [] };
+        if (localStorage.getItem("posts") === null) {
+          localStorage.setItem("posts", JSON.stringify(this.props.data));
+        }
+        this.state = { posts: JSON.parse(localStorage.getItem("posts")), title: '', body: '', tags: [] };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleRemove = this.handleRemove.bind(this);
@@ -84,7 +87,9 @@
           title: '',
           body: '',
           tags: []
-        }));
+        }), function() {
+          localStorage.setItem("posts", JSON.stringify(this.state.posts));
+        });
       }
 
       handleRemove(e) {
@@ -94,7 +99,9 @@
           title: '',
           body: '',
           tags: []
-        }));
+        }), function() {
+          localStorage.setItem("posts", JSON.stringify(this.state.posts));
+        });
       }
 
       getPostsMaxId() {

@@ -1,4 +1,6 @@
-let postsData = [
+const localPostsKey = "app-posts";
+
+const postsData = [
   {
       "id": 1,
       "title": "Стремящийся наибольший",
@@ -32,3 +34,7 @@ let postsData = [
       ]
   }
 ];
+
+if (localStorage.getItem(localPostsKey) === null) {
+    localStorage.setItem(localPostsKey, JSON.stringify(postsData));
+}

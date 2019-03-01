@@ -26,10 +26,10 @@
     class App extends React.Component {
       constructor(props) {
         super(props);
-        if (localStorage.getItem("posts") === null) {
-          localStorage.setItem("posts", JSON.stringify(this.props.data));
+        if (localStorage.getItem(this.props.localKey) === null) {
+          localStorage.setItem(this.props.localKey, JSON.stringify([]));
         }
-        this.state = { posts: JSON.parse(localStorage.getItem("posts")), title: '', body: '', tags: [] };
+        this.state = { posts: JSON.parse(localStorage.getItem(this.props.localKey)), title: '', body: '', tags: [] };
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
         this.handleRemove = this.handleRemove.bind(this);
@@ -69,10 +69,10 @@
 
       handleSubmit(e) {
         e.preventDefault();
-        let maxId = this.getPostsMaxId();
-        let clearTitle = this.state.title.trim();
-        let clearBody = this.state.body.trim();
-        let clearTags = this.state.tags.map(elem => elem.trim()).filter((elem,i,arr) => (elem && arr.indexOf(elem) === i));
+        const maxId = this.getPostsMaxId();
+        const clearTitle = this.state.title.trim();
+        const clearBody = this.state.body.trim();
+        const clearTags = this.state.tags.map(elem => elem.trim()).filter((elem,i,arr) => (elem && arr.indexOf(elem) === i));
         if (!clearTitle.length || !clearBody.length || !clearTags.length) {
           return;
         }
@@ -88,19 +88,19 @@
           body: '',
           tags: []
         }), function() {
-          localStorage.setItem("posts", JSON.stringify(this.state.posts));
+          localStorage.setItem(this.props.localKey, JSON.stringify(this.state.posts));
         });
       }
 
       handleRemove(e) {
-        let clearId = parseInt(e.target.id.substr("button-post-".length));
+        const clearId = parseInt(e.target.id.substr("button-post-".length));
         this.setState(state => ({
           posts: state.posts.filter(elem => (parseInt(elem.id) !== clearId)),
           title: '',
           body: '',
           tags: []
         }), function() {
-          localStorage.setItem("posts", JSON.stringify(this.state.posts));
+          localStorage.setItem(this.props.localKey, JSON.stringify(this.state.posts));
         });
       }
 
@@ -189,9 +189,9 @@
       }
     }
 
-    // postsData is declared and initialized in js/posts.js
+    // localPostsKey is declared and initialized in js/posts.js
     ReactDOM.render(
-      <App data={postsData} />,
+      <App localKey={localPostsKey} />,
       document.getElementById('main')
     );
 

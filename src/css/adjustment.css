@@ -1,7 +1,7 @@
-#main > .container {
+#root > .container {
   min-width: 400px;
 }
-  #main > .container:after {
+  #root > .container:after {
     height: 15px;
   }
 
